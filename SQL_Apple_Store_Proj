@@ -1,0 +1,68 @@
+/*
+
+Apple App Store Analysis
+
+OVERVIEW -
+This portfolio project showcases my skills in SQL and data analysis by examining data from the Apple App Store. The goal of the project is to provide insights for aspiring app developers. The analysis will answer various business questions related to app categories, prices, ratings, and descriptions.
+
+PROJECT DESCRIPTION -
+The Apple App Store data is sourced from several CSV files, which contain various details about the apps. Using MySQL for data manipulation and analysis, I will import the CSV files, combine and join the data using the app "id" field as the key, and then analyze the combined data to answer the business questions. 
+
+RESOURCES -
+- Data Source: Original dataset is from Kaggle, but this project is inspired by this YouTube video: https://youtu.be/EKOWoInn46A, using a modified version of the original data, found here: https://drive.google.com/drive/folders/1_3upvRufarzFzW2I0YavucNFCR8bZrYn
+- SQLiteOnline.com: Used as an IDE for this project
+
+TECHNOLOGIES USED -
+- SQLite: Used for data manipulation, combination, and analysis
+
+AUTHOR INFORMATION- 
+**Author:** Ernest Devaney
+**Contact:** hello@ernestdevaney.com
+**LinkedIn:** [Ernest Devaney](https://www.linkedin.com/in/ernest-devaney/)
+
+Feel free to reach out if you have any questions or would like to discuss my approach to the Apple App Store data analysis!
+
+*/
+
+
+-- There are five .csv files in all which need to be imported. Four are quarters of a larger file, so I'll need to import and combine those. The other .csv file can be joined with a unique key.
+-- It's important to note that the below SQL code is what I would do if I'd done all of this within an IDE on my computer. As I used SQLiteOnline.com as an interface, I did not actually have to use the following code. Regardless I wanted to show how I would have done it had I not used an online tool.
+
+-- I'll start by creating the table which I'll load the four .csv files which can be easily combined.
+
+CREATE TABLE app_store (
+  id INT,
+  track_name TEXT,
+  size_bytes BIGINT,
+  app_desc TEXT
+);
+
+-- Now to import the files and combine them into one table
+
+.mode csv
+.import /.../appleStore_description1.csv app_store
+DELETE FROM app_store WHERE rowid = 1;
+
+.import /.../appleStore_description2.csv app_store
+DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+
+.import /.../appleStore_description3.csv app_store
+DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+
+.import /.../appleStore_description4.csv app_store
+DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
