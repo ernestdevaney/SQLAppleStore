@@ -26,31 +26,134 @@ Feel free to reach out if you have any questions or would like to discuss my app
 
 
 -- There are five .csv files in all which need to be imported. Four are quarters of a larger file, so I'll need to import and combine those. The other .csv file can be joined with a unique key.
--- It's important to note that the below SQL code is what I would do if I'd done all of this within an IDE on my computer. As I used SQLiteOnline.com as an interface, I did not actually have to use the following code. Regardless I wanted to show how I would have done it had I not used an online tool.
 
--- I'll start by creating the table which I'll load the four .csv files which can be easily combined.
+-- I've imported the .csv files into my environment. Now to combine the four description files into one table.
 
-CREATE TABLE app_store (
-  id INT,
-  track_name TEXT,
-  size_bytes BIGINT,
-  app_desc TEXT
-);
+CREATE TABLE app_store AS
+SELECT * 
+FROM appleStore_description1
+UNION ALL
+SELECT * 
+FROM appleStore_description2
+UNION ALL
+SELECT * 
+FROM appleStore_description3
+UNION ALL
+SELECT * 
+FROM appleStore_description4;
 
--- Now to import the files and combine them into one table
+-- Let's check to make sure that worked
 
-.mode csv
-.import /.../appleStore_description1.csv app_store
-DELETE FROM app_store WHERE rowid = 1;
+SELECT * 
+FROM app_store 
+LIMIT 10;
 
-.import /.../appleStore_description2.csv app_store
-DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+-- Looks good. Now to check for null values.
 
-.import /.../appleStore_description3.csv app_store
-DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+SELECT * 
+FROM app_store 
+WHERE id IS NULL;
 
-.import /.../appleStore_description4.csv app_store
-DELETE FROM app_store WHERE rowid = (SELECT MAX(rowid) FROM app_store);
+-- No nulls. Any duplicates? I'm going to group by id, and then see if any group contains more than one value.
+
+SELECT id, COUNT(*) 
+FROM app_store 
+GROUP BY id 
+HAVING COUNT(*) > 1;
+
+-- No nulls, no duplicates. Let's do the same for the AppleStore table.
+
+SELECT * 
+FROM AppleStore 
+WHERE id IS NULL;
+
+SELECT id, COUNT(*) 
+FROM AppleStore 
+GROUP BY id 
+HAVING COUNT(*) > 1;
+
+-- Also looks good. Before joining the two tables, I want to make sure that the id's match between the two.
+
+SELECT COUNT(*) FROM app_store;
+
+-- result: 7197
+
+SELECT COUNT(*) FROM AppleStore;
+
+-- result: 7197
+
+-- I'll check to see if either table contains any id's that aren't a match on the other.
+
+SELECT id 
+FROM app_store
+EXCEPT 
+SELECT id 
+FROM AppleStore;
+
+SELECT id 
+FROM AppleStore
+EXCEPT 
+SELECT id 
+FROM app_store;
+
+-- Looks good all around, time to JOIN.
+
+CREATE TABLE full_app_store AS
+SELECT *
+FROM app_store
+JOIN AppleStore
+ON app_store.id = AppleStore.id;
+
+SELECT *
+FROM full_app_store
+LIMIT 10;
+
+-- Joining the tables created three duplicate columns. I want to drop them but before I do, I'm just going to verify that they are fully duplicates.
+
+SELECT *
+FROM table_name
+WHERE id != `id:1` 
+  OR track_name != `track_name:1` 
+  OR size_bytes != `size_bytes:1`;
+
+-- I'm glad I checked. It looks like track_names has periods where it should have commas. I can't just replace all periods with commas as that'll turn Ms. PAC-MAN into Ms, PAC-MAN, etc. So, I'll keep the track_name:1 column
+
+-- I'm going to create a new table without the duplicate columns.
+
+CREATE TABLE app_store_cleaned AS
+SELECT
+	id,
+  'track_name:1' AS track_name,
+  size_bytes,
+  app_desc,
+  currency,
+  price,
+  rating_count_tot,
+  rating_count_ver,
+  user_rating,
+  user_rating_ver,
+  ver,
+  cont_rating,
+  prime_genre,
+  sup_devices_num,
+  ipadsc_urls_num,
+  lang_num,
+  vpp_lic
+FROM full_app_store;
+
+SELECT *
+FROM app_store_cleaned
+LIMIT 10;
+
+
+
+
+
+
+
+
+
+
 
 
 
