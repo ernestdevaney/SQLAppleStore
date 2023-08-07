@@ -211,13 +211,41 @@ FROM (
   LIMIT 100
 );
 
--- The average rating for the top 100 free apps is 5, and the average rating for the top 100 paid apps is 5. I did this a couple of different ways as I didn't believe it at first.
--- Okay, so here are my thoughts. What is a free app? An app that is free to download. But so many "free" apps require subscriptions or other in-app purchases to unlock their full features. I can download Microsoft Excel for free, but I can't use it without paying a monthly fee. 
--- So, does the distinction between paid and free mean what it may have years ago? Probably not. Without more information, such as engagement metrics or profit earned per app, there's not much I can surmise from the average review scores between paid and free. 
--- My suspicion is that free apps have a lower score on average because of the scroes and scores of garbage apps released by app mills, and things of that nature. 
+-- The average rating for the top 100 free apps is 5, and the average rating for the top 100 paid apps is 5.
+-- What is a free app? An app that is free to download, sure. But, it may require subscriptions or other in-app purchases to unlock functionality.
+-- Does the distinction between paid and free mean what it may have years ago? Probably not.
+-- Without more information, there's not much I can surmise from the average review scores between paid and free.
+-- My suspicion is that free apps have a lower score on average because of the scores of garbage apps released by app mills.
+-- Without data such as user engagement metrics or even better, profit margins, I think that average review scores are a dead end. Moving on!
 
+-- Just out of curiosity I'm going to see if certain categories have better overall review scores than others, again looking only at the top 100 in each category to avoid the garbage pit at the bottom. 
 
+WITH RankedApps AS (
+  SELECT 
+      prime_genre,
+      user_rating,
+      ROW_NUMBER() OVER (PARTITION BY prime_genre ORDER BY user_rating DESC) AS rank_within_genre
+  FROM app_store_cleaned
+)
+SELECT 
+    prime_genre,
+    AVG(user_rating) AS avg_rating
+FROM RankedApps
+WHERE rank_within_genre <= 100
+GROUP BY prime_genre
+ORDER BY avg_rating DESC;
 
+-- Here are some results: The top 100 Games have an average rating of 5. Photo & Video - 4.65, Entertainment - 4.63, Health & Fitness - 4.62, Productivity - 4.62. The bottom five are: News - 2.98, Book - 2.78, Navigation - 2.68, Finance - 2.53, and Catalogs at a dismal 2.1.
+
+-- Not to get off track but, 'Catalogs'? I have to see how many apps are in that category.
+
+SELECT COUNT(track_name) AS num_apps, prime_genre
+FROM app_store_cleaned
+WHERE prime_genre = 'Catalogs';
+
+-- Ten. Someone could be the eleventh in that category and really turn things around. But not today. Moving on.
+
+-- 
 
 
 
