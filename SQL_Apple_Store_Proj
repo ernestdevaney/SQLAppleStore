@@ -122,8 +122,8 @@ WHERE id != `id:1`
 
 CREATE TABLE app_store_cleaned AS
 SELECT
-	id,
-  'track_name:1' AS track_name,
+  id,
+  "track_name:1" AS track_name,
   size_bytes,
   app_desc,
   currency,
@@ -144,6 +144,79 @@ FROM full_app_store;
 SELECT *
 FROM app_store_cleaned
 LIMIT 10;
+
+-- Looks good! Now to start poking around, trying to answer some obvious questions. I'll start with -What are the most popular categories?
+
+SELECT prime_genre, SUM(rating_count_tot) as total_ratings
+FROM app_store_cleaned
+GROUP BY prime_genre
+ORDER BY total_ratings DESC;
+
+-- Wow, lots of reviews for games! Let's look at the top ten results.
+/*
+Games - 52,878,491
+Social Networking - 7,598,316
+Photo & Video - 5,008,946
+Entertainment - 4,030,518
+Music - 3,980,199
+Shopping - 2,271,070
+Health & Fitness - 1,784,371
+Utilities - 1,702,228
+Sports - 1,599,070
+Weather - 1,597,034
+*/
+-- Okay, so games are popular. Let's see what the ten highest-reviewed games are to see what the playing field looks like.
+
+SELECT track_name, rating_count_tot
+FROM app_store_cleaned
+WHERE prime_genre = 'Games'
+ORDER BY rating_count_tot DESC
+LIMIT 10;
+
+-- Most of these are what I'd refer to as legacy games. They also look like they're mainly from larger developers. That might make this category difficult to break into.
+
+-- I'm going to look at the average review scores of paid versus free apps. I suspect paid apps will review higher as they may be more robust, and of course people tend to value things more when they have paid money for them.
+
+SELECT 
+    CASE 
+        WHEN price = 0 THEN 'Free'
+        ELSE 'Paid'
+    END AS app_type,
+    AVG(user_rating) AS avg_user_rating
+FROM app_store_cleaned
+GROUP BY app_type
+ORDER BY avg_user_rating DESC;
+
+-- The average user ratings are as follows: Paid apps - 3.72, Free apps - 3.38. I don't think this is useful. I'll get into why in a bit.
+
+-- Let's see the average review score of the top 100 for both free and paid apps.
+
+-- Average rating for the top 100 free apps
+SELECT 'Free' AS app_type, AVG(user_rating) AS avg_user_rating
+FROM (
+  SELECT user_rating
+  FROM app_store_cleaned
+  WHERE price = 0
+  ORDER BY user_rating DESC
+  LIMIT 100
+)
+UNION ALL
+-- Average rating for the top 100 paid apps
+SELECT 'Paid' AS app_type, AVG(user_rating) AS avg_user_rating
+FROM (
+  SELECT user_rating
+  FROM app_store_cleaned
+  WHERE price > 0
+  ORDER BY user_rating DESC
+  LIMIT 100
+);
+
+-- The average rating for the top 100 free apps is 5, and the average rating for the top 100 paid apps is 5. I did this a couple of different ways as I didn't believe it at first.
+-- Okay, so here are my thoughts. What is a free app? An app that is free to download. But so many "free" apps require subscriptions or other in-app purchases to unlock their full features. I can download Microsoft Excel for free, but I can't use it without paying a monthly fee. 
+-- So, does the distinction between paid and free mean what it may have years ago? Probably not. Without more information, such as engagement metrics or profit earned per app, there's not much I can surmise from the average review scores between paid and free. 
+-- My suspicion is that free apps have a lower score on average because of the scroes and scores of garbage apps released by app mills, and things of that nature. 
+
+
 
 
 
