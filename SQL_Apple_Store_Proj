@@ -111,7 +111,7 @@ LIMIT 10;
 -- Joining the tables created three duplicate columns. I want to drop them but before I do, I'm just going to verify that they are fully duplicates.
 
 SELECT *
-FROM table_name
+FROM full_app_store
 WHERE id != `id:1` 
   OR track_name != `track_name:1` 
   OR size_bytes != `size_bytes:1`;
@@ -215,8 +215,8 @@ FROM (
 -- What is a free app? An app that is free to download, sure. But, it may require subscriptions or other in-app purchases to unlock functionality.
 -- Does the distinction between paid and free mean what it may have years ago? Probably not.
 -- Without more information, there's not much I can surmise from the average review scores between paid and free.
--- My suspicion is that free apps have a lower score on average because of the scores of garbage apps released by app mills.
--- Without data such as user engagement metrics or even better, profit margins, I think that average review scores are a dead end. Moving on!
+-- My suspicion is that free apps have a lower score on average because of the ocean of garbage apps released by app mills.
+-- Without data such as user engagement metrics or even better, profit margins, I think this is a dead end. Moving on!
 
 -- Just out of curiosity I'm going to see if certain categories have better overall review scores than others, again looking only at the top 100 in each category to avoid the garbage pit at the bottom. 
 
@@ -243,9 +243,72 @@ SELECT COUNT(track_name) AS num_apps, prime_genre
 FROM app_store_cleaned
 WHERE prime_genre = 'Catalogs';
 
--- Ten. Someone could be the eleventh in that category and really turn things around. But not today. Moving on.
+-- Ten. Someone could be the eleventh in that category and really turn things around. But not today. 
 
--- 
+-- I'm going to look into number of apps, number of reviews, and score averages for different price buckets.
+
+SELECT 
+  CASE
+    WHEN price = 0 THEN 'Free'
+    WHEN price > 0 AND price <= 0.99 THEN 'Low-Priced (0.01 - 0.99)'
+    WHEN price > 0.99 AND price <= 2.99 THEN 'Moderate-Priced (1 - 2.99)'
+    WHEN price > 2.99 AND price <= 4.99 THEN 'High-Priced (3 - 4.99)'
+    ELSE 'Premium (5+)'
+  END AS price_bracket,
+  COUNT(*) AS number_of_apps,
+  AVG(user_rating) AS avg_user_rating,
+  SUM(rating_count_tot) AS total_reviews
+FROM app_store_cleaned
+GROUP BY price_bracket
+ORDER BY 
+  CASE 
+    WHEN price_bracket = 'Free' THEN 1
+    WHEN price_bracket = 'Low-Priced (0.01 - 0.99)' THEN 2
+    WHEN price_bracket = 'Moderate-Priced (1 - 2.99)' THEN 3
+    WHEN price_bracket = 'High-Priced (3 - 4.99)' THEN 4
+    ELSE 5
+  END;
+
+-- Results: Unsurprisingly, there are more free apps than the rest combined. Of paid apps, most are in the 1-2.99 bracket. Apps in the 1-2.99 bracket as well as the 3-4.99 bracket have the highest average review scores at ~3.82 each. They are higher than the average review score for the 5+ bracket, which is 3.7.
+
+-- Now let's look at language support.
+
+SELECT 
+  lang_num AS number_of_supported_languages,
+  COUNT(*) AS number_of_apps
+FROM app_store_cleaned
+GROUP BY lang_num
+ORDER BY number_of_supported_languages;
+
+-- This shows us that most apps only have support for one language. Just over half the apps in this dataset, actually. 41 apps support zero languages. That's... Yeah. My guess is that the developers didn't check a box when submitting their app?
+
+-- I want to put the number of languages supported into buckets so I can see how many reviews they have, and what the average score is.
+
+SELECT 
+  CASE
+    WHEN lang_num = 1 THEN '1 Language'
+    WHEN lang_num > 1 AND lang_num <= 5 THEN '2-5 Languages'
+    WHEN lang_num > 5 AND lang_num <= 10 THEN '6-10 Languages'
+    WHEN lang_num > 10 AND lang_num <= 20 THEN '11-20 Languages'
+    ELSE '21+ Languages'
+  END AS language_support_bracket,
+  COUNT(*) AS number_of_apps,
+  AVG(user_rating) AS avg_user_rating,
+  SUM(rating_count_tot) AS total_reviews
+FROM app_store_cleaned
+GROUP BY language_support_bracket
+ORDER BY 
+  CASE 
+    WHEN language_support_bracket = '1 Language' THEN 1
+    WHEN language_support_bracket = '2-5 Languages' THEN 2
+    WHEN language_support_bracket = '6-10 Languages' THEN 3
+    WHEN language_support_bracket = '11-20 Languages' THEN 4
+    ELSE 5
+  END;
+
+-- Between 11 and 20 languages seems to be the sweet spot here. There are a lot of apps in this bracket (1032) and they review well (avg 4.14). The next best review score is in the 6 - 10 bracket at 4.05. The worst average review score is for apps that support 2-5 languages, at 3.11.
+
+-- So where does all of this leave us?
 
 
 
