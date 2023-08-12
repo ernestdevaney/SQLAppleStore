@@ -112,9 +112,9 @@ LIMIT 10;
 
 SELECT *
 FROM full_app_store
-WHERE id != `id:1` 
-  OR track_name != `track_name:1` 
-  OR size_bytes != `size_bytes:1`;
+WHERE id != "id:1" 
+  OR track_name != "track_name:1" 
+  OR size_bytes != "size_bytes:1";
 
 -- I'm glad I checked. It looks like track_names has periods where it should have commas. I can't just replace all periods with commas as that'll turn Ms. PAC-MAN into Ms, PAC-MAN, etc. So, I'll keep the track_name:1 column
 
