@@ -308,11 +308,41 @@ ORDER BY
 
 -- Between 11 and 20 languages seems to be the sweet spot here. There are a lot of apps in this bracket (1032) and they review well (avg 4.14). The next best review score is in the 6 - 10 bracket at 4.05. The worst average review score is for apps that support 2-5 languages, at 3.11.
 
+
 -- So where does all of this leave us?
 
 
+-- Review and Recommendations:
 
+-- We've thoroughly explored the Apple App Store data and unearthed some valuable insights that can guide aspiring app developers. Here's a summary of our findings and actionable recommendations:
 
+-- Categories:
+--Finding: Games dominate the landscape, followed by Social Networking and Photo & Video.
+--Recommendation: Consider targeting niche categories like Health & Fitness or Productivity, where competition might be lower but opportunities abound.
+
+-- Price Point:
+-- Finding: Apps priced between $1 - $4.99 receive favorable reviews, while free apps also hold a significant market share.
+-- Recommendation: Positioning your app in the $1 - $4.99 range might hit the sweet spot in balancing profitability and attractiveness to users.
+
+-- Language Support:
+-- Finding: Apps supporting 11-20 languages seem to strike a balance between accessibility and favorable reviews.
+-- Recommendation: If possible, aim for supporting multiple languages, focusing on 11-20 to increase global reach without overwhelming resources.
+
+-- Content Ratings and Size:
+-- Finding: We noticed variations across content ratings and app size but didn't delve deep into these aspects.
+-- Recommendation: Future research could explore these factors, offering further insights for targeted development.
+
+-- Limitations:
+-- The dataset lacks information on user engagement and revenue, limiting our ability to make comprehensive profitability recommendations.
+-- The distinction between "free" and "paid" might not fully capture the current market dynamics, with many free apps offering in-app purchases or subscriptions.
+
+-- Final Thoughts:
+-- Based on our analysis, an aspiring app developer looking to create a successful app might choose to focus on a niche category, price the app within a moderate range, and consider multi-language support. 
+-- These insights offer a starting point, but understanding specific market dynamics, audience needs, and emerging trends will be essential for building a profitable and popular app.
+
+-- Thank you for taking the time to explore this analysis of the Apple App Store. 
+-- If you'd like to discuss this project further, explore collaboration opportunities, or consider how my skills might fit within your organization, please don't hesitate to reach out to me at hello@ernestdevaney.com or via LinkedIn.
+-- I look forward to potentially working together!
 
 
 
