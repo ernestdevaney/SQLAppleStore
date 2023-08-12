@@ -6,7 +6,7 @@ OVERVIEW -
 This portfolio project showcases my skills in SQL and data analysis by examining data from the Apple App Store. The goal of the project is to provide insights for aspiring app developers. The analysis will answer various business questions related to app categories, prices, ratings, and descriptions.
 
 PROJECT DESCRIPTION -
-The Apple App Store data is sourced from several CSV files, which contain various details about the apps. Using MySQL for data manipulation and analysis, I will import the CSV files, combine and join the data using the app "id" field as the key, and then analyze the combined data to answer the business questions. 
+The Apple App Store data is sourced from several CSV files, which contain various details about the apps. Using SQLite for data manipulation and analysis, I will import the CSV files, combine and join the data using the app "id" field as the key, and then analyze the combined data to answer the business questions. 
 
 RESOURCES -
 - Data Source: Original dataset is from Kaggle, but this project is inspired by this YouTube video: https://youtu.be/EKOWoInn46A, using a modified version of the original data, found here: https://drive.google.com/drive/folders/1_3upvRufarzFzW2I0YavucNFCR8bZrYn
